@@ -24,6 +24,18 @@ const addPost = async () => {
     setPosts([res.data, ...posts]);
 };
 
+  const editPost = async (id) => {
+    const post = posts.find(p => p.id === id);
+    const title = prompt("Edit post title:", post.title);
+    const body = prompt("Edit post body:", post.body);
+    
+    if (!title || !body) return;
+    
+    const updatedPost = { title, body, userId: post.userId };
+    const res = await api.put(`/posts/${id}`, updatedPost);
+    setPosts(posts.map(p => p.id === id ? { ...res.data, id } : p));
+  };
+
   const deletePost = async (id) => {
     await api.delete(`/posts/${id}`);
     setPosts(posts.filter(p => p.id !== id));
@@ -43,6 +55,12 @@ const addPost = async () => {
         <div key={p.id} style={{ border: "1px solid #333", margin: "10px 0", padding: "10px", borderRadius: "6px" }}>
           <h3>{p.title}</h3>
           <p>{p.body}</p>
+          <button
+            onClick={() => editPost(p.id)}
+            style={{ background: "#4CAF50", color: "white", padding: "5px 10px", border: "none", borderRadius: "4px", cursor: "pointer", marginRight: "5px" }}
+          >
+            Edit
+          </button>
           <button
             onClick={() => deletePost(p.id)}
             style={{ background: "#ff4444", color: "white", padding: "5px 10px", border: "none", borderRadius: "4px", cursor: "pointer" }}
